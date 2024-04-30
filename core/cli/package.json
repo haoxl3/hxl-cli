@@ -20,7 +20,12 @@
     "test": "node ./__tests__/core.test.js"
   },
   "dependencies": {
+    "@hxl-cli/log": "file:../../utils/log",
+    "colors": "^1.4.0",
     "import-local": "^3.1.0",
-    "@hxl-cli/log": "file:../../utils/log"
+    "path-exists": "^5.0.0",
+    "root-check": "^2.0.0",
+    "semver": "^7.6.0",
+    "user-home": "^3.0.0"
   }
 }
