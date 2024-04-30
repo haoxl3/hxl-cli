@@ -14,6 +14,9 @@ function core() {
     checkPkgVersion();
     checkRoot();
     checkUserHome();
+    checkInputArgs();
+    // logo默认是info2000，需要修改LOG_LEVEL才可打印出debug
+    log.verbose('debug', 'test debug log');
   } catch (e) {
     log.error(e.message);
   }
@@ -47,4 +50,16 @@ function checkUserHome() {
   } else {
     log.info('userHome', userHome);
   }
+}
+
+function checkInputArgs() {
+  const minimist = require('minimist');
+  const args = minimist(process.argv.slice(2));
+  // 如果控制台输入了debug参数，修改logo的级别为verbose
+  if (args.debug) {
+    process.env.LOG_LEVEL = 'verbose';
+  } else {
+    process.env.LOG_LEVEL = 'info';
+  }
+  log.level = process.env.LOG_LEVEL;
 }
