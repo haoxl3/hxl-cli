@@ -2,11 +2,13 @@
 
 module.exports = core;
 
+const path = require('path');
 const pkg = require('../package.json');
 const log = require('@hxl-cli/log');
 // const colors = require('colors');
 const userHome = require('user-home'); // 检查是否在主目录
 const pathExists = require('path-exists').sync; // 检查文件是否存在
+const constant = require('./const');
 
 function core() {
   console.log('I am core');
@@ -17,6 +19,7 @@ function core() {
     checkInputArgs();
     // logo默认是info2000，需要修改LOG_LEVEL才可打印出debug
     log.verbose('debug', 'test debug log');
+    checkEnv();
   } catch (e) {
     log.error(e.message);
   }
@@ -62,4 +65,29 @@ function checkInputArgs() {
     process.env.LOG_LEVEL = 'info';
   }
   log.level = process.env.LOG_LEVEL;
+}
+
+function checkEnv() {
+  const dotenv = require('dotenv');
+  const dotenvPath = path.resolve(userHome, '.env');
+  let config;
+  // 如果存在.env文件则打印，否则创建一个.env文件
+  if (pathExists(dotenvPath)) {
+    dotenv.config({
+      path: dotenvPath
+    });
+  } else {
+    const cliConfig = {
+      home: userHome
+    };
+    if (process.env.CLI_HOME) {
+      cliConfig['cliHome'] = path.join(userHome, process.env.CLI_HOME);
+    } else {
+      cliConfig['cliHome'] = path.join(userHome, constant.DEFAULT_CLI_HOME);
+    }
+    // config = cliConfig;
+    process.env.CLI_HOME_PATH = cliConfig['cliHome'];
+  }
+  
+  log.verbose('env', config);
 }
