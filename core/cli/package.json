@@ -20,6 +20,7 @@
     "test": "node ./__tests__/core.test.js"
   },
   "dependencies": {
-    "import-local": "^3.1.0"
+    "import-local": "^3.1.0",
+    "@hxl-cli/log": "file:../../utils/log"
   }
 }
