@@ -9,6 +9,7 @@ const log = require('@hxl-cli/log');
 const userHome = require('user-home'); // 检查是否在主目录
 const pathExists = require('path-exists').sync; // 检查文件是否存在
 const constant = require('./const');
+const semver = require('semver');
 
 async function core() {
   console.log('I am core');
@@ -98,8 +99,11 @@ async function checkGlobalUpdate() {
   const currentVersion = pkg.version;
   const npmName = pkg.name;
   // 2. 调用npm API获取所有版本号
-  const { getNpmInfo } = require('@hxl-cli/get-npm-info');
-  const data = await getNpmInfo(npmName);
+  const { getNpmSemverVersion } = require('@hxl-cli/get-npm-info');
   // 3. 提取所有版本号，比对哪些版本号是大于当前版本号
+  const lastVersion = await getNpmSemverVersion(currentVersion, npmName);
   // 4. 获取最新的版本号，提示用户更新到该版本
+  if (lastVersion && semver.gt(lastVersion, currentVersion)) {
+    log.warn(colors.yellow(`请手动更新${npmName},当前版本为${currentVersion},最新版本为${lastVersion}`))
+  }
 }
