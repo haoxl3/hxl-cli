@@ -10,6 +10,10 @@ const userHome = require('user-home'); // 检查是否在主目录
 const pathExists = require('path-exists').sync; // 检查文件是否存在
 const constant = require('./const');
 const semver = require('semver');
+const commander = require('commander');
+const init = require('@hxl-cli/init');
+
+const program = new commander.Command();
 
 async function core() {
   console.log('I am core');
@@ -17,11 +21,12 @@ async function core() {
     checkPkgVersion();
     checkRoot();
     checkUserHome();
-    checkInputArgs();
+    // checkInputArgs();
     // logo默认是info2000，需要修改LOG_LEVEL才可打印出debug
     log.verbose('debug', 'test debug log');
     checkEnv();
     await checkGlobalUpdate();
+    registerCommand();
   } catch (e) {
     log.error(e.message);
   }
@@ -105,5 +110,41 @@ async function checkGlobalUpdate() {
   // 4. 获取最新的版本号，提示用户更新到该版本
   if (lastVersion && semver.gt(lastVersion, currentVersion)) {
     log.warn(colors.yellow(`请手动更新${npmName},当前版本为${currentVersion},最新版本为${lastVersion}`))
+  }
+}
+
+function registerCommand() {
+  // 注册命令
+  program
+    .name(Object.keys(pkg.bin)[0])
+    .usage('<command> [options]')
+    .version(pkg.version)
+    .options('-d', '--debug', '是否开启调试模式', false);
+  program
+    .command('init [projectName]')
+    .option('-f, --force', '是否强制初始化项目')
+    .action(init);
+  // 开启debug模式
+  program.on('option:debug', function() {
+    if (program.debug) {
+      process.env.LOG_LEVEL = 'verbose';
+    } else {
+      process.env.LOG_LEVEL = 'info';
+    }
+    log.level = process.env.LOG_LEVEL;
+  });
+  // 监听未知命令
+  program.on('command:*', function(obj) {
+    const availableCommands = program.commands.map(cmd => cmd.name());
+    console.log(colors.red('未知的命令：' + obj[0]));
+    if (availableCommands.length) {
+      console.log(colors.red('可用命令：' + availableCommands.join(', ')));
+    }
+  });
+  // 未输入命令时打印出帮忙文档
+  if (program.args && program.argv.length < 3) {
+    program.outputHelp();
+  } else {
+    program.parse(process.argv);
   }
 }
