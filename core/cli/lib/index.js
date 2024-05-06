@@ -10,7 +10,7 @@ const userHome = require('user-home'); // 检查是否在主目录
 const pathExists = require('path-exists').sync; // 检查文件是否存在
 const constant = require('./const');
 
-function core() {
+async function core() {
   console.log('I am core');
   try {
     checkPkgVersion();
@@ -20,6 +20,7 @@ function core() {
     // logo默认是info2000，需要修改LOG_LEVEL才可打印出debug
     log.verbose('debug', 'test debug log');
     checkEnv();
+    await checkGlobalUpdate();
   } catch (e) {
     log.error(e.message);
   }
@@ -90,4 +91,15 @@ function checkEnv() {
   }
   
   log.verbose('env', config);
+}
+
+async function checkGlobalUpdate() {
+  // 1.获取当前版本号和模块名
+  const currentVersion = pkg.version;
+  const npmName = pkg.name;
+  // 2. 调用npm API获取所有版本号
+  const { getNpmInfo } = require('@hxl-cli/get-npm-info');
+  const data = await getNpmInfo(npmName);
+  // 3. 提取所有版本号，比对哪些版本号是大于当前版本号
+  // 4. 获取最新的版本号，提示用户更新到该版本
 }
