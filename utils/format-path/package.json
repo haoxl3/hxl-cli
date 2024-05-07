@@ -1,5 +1,5 @@
 {
-  "name": "@hxl-cli/package",
+  "name": "@hxl-cli/format-path",
   "version": "0.0.1",
   "description": "> TODO: description",
   "author": "haoxl <1098262516@qq.com>",
@@ -21,14 +21,9 @@
     "url": "git+https://github.com/haoxl3/hxl-cli.git"
   },
   "scripts": {
-    "test": "node ./__tests__/@hxl-cli/package.test.js"
+    "test": "node ./__tests__/@hxl-cli/format-path.test.js"
   },
   "bugs": {
     "url": "https://github.com/haoxl3/hxl-cli/issues"
-  },
-  "dependencies": {
-    "@hxl-cli/utils": "file:../../utils/utils",
-    "@hxl-cli/format-path": "file:../../utils/format-path",
-    "pkg-dir": "^8.0.0"
   }
 }

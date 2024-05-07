@@ -27,6 +27,7 @@
     "url": "https://github.com/haoxl3/hxl-cli/issues"
   },
   "dependencies": {
-    "@hxl-cli/package": "file:../../models/package"
+    "@hxl-cli/package": "file:../../models/package",
+    "@hxl-cli/log": "file:../../utils/log"
   }
 }
