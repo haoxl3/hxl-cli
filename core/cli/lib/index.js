@@ -12,24 +12,28 @@ const constant = require('./const');
 const semver = require('semver');
 const commander = require('commander');
 const init = require('@hxl-cli/init');
+const exec = require('@hxl-cli/exec');
 
 const program = new commander.Command();
 
 async function core() {
   console.log('I am core');
   try {
-    checkPkgVersion();
-    checkRoot();
-    checkUserHome();
-    // checkInputArgs();
-    // logo默认是info2000，需要修改LOG_LEVEL才可打印出debug
-    log.verbose('debug', 'test debug log');
-    checkEnv();
-    await checkGlobalUpdate();
+    await prepare();
     registerCommand();
   } catch (e) {
     log.error(e.message);
   }
+}
+async function prepare() {
+  checkPkgVersion();
+  checkRoot();
+  checkUserHome();
+  // checkInputArgs();
+  // logo默认是info2000，需要修改LOG_LEVEL才可打印出debug
+  // log.verbose('debug', 'test debug log');
+  checkEnv();
+  await checkGlobalUpdate();
 }
 
 function checkPkgVersion() {
@@ -119,11 +123,12 @@ function registerCommand() {
     .name(Object.keys(pkg.bin)[0])
     .usage('<command> [options]')
     .version(pkg.version)
-    .options('-d', '--debug', '是否开启调试模式', false);
+    .option('-d', '--debug', '是否开启调试模式', false)
+    .option('-tp, --targetPath <targetPath>', '是否指定本地调试文件路径', '');
   program
     .command('init [projectName]')
     .option('-f, --force', '是否强制初始化项目')
-    .action(init);
+    .action(exec);
   // 开启debug模式
   program.on('option:debug', function() {
     if (program.debug) {
@@ -132,6 +137,11 @@ function registerCommand() {
       process.env.LOG_LEVEL = 'info';
     }
     log.level = process.env.LOG_LEVEL;
+  });
+  // 监听全局变量
+  program.on('option:targetPath', function() {
+    // 传给环境变量
+    program.env.CLI_TARGET_PATH = program.targetPath;
   });
   // 监听未知命令
   program.on('command:*', function(obj) {
