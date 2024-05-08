@@ -33,8 +33,8 @@
     "dotenv": "^16.4.5",
     "import-local": "^3.1.0",
     "minimist": "^1.2.8",
-    "path-exists": "^5.0.0",
-    "root-check": "^2.0.0",
+    "path-exists": "^4.0.0",
+    "root-check": "^1.0.0",
     "semver": "^7.6.0",
     "user-home": "^3.0.0"
   }
