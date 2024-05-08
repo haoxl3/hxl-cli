@@ -17,7 +17,7 @@
     "lib"
   ],
   "publishConfig": {
-    "registry": "http://registry.npm.baidu-int.com",
+    "registry": "https://registry.npmjs.org",
     "access": "public"
   },
   "scripts": {
