@@ -30,6 +30,8 @@
   "dependencies": {
     "@hxl-cli/format-path": "file:../../utils/format-path",
     "@hxl-cli/utils": "file:../../utils/utils",
+    "@hxl-cli/get-npm-info": "file:../../utils/get-npm-info",
+    "npminstall": "^7.12.0",
     "pkg-dir": "^8.0.0"
   }
 }

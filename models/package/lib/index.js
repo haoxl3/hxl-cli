@@ -4,6 +4,8 @@ const { isObject } = require('@hxl-cli/utils');
 const pkgDir = require('pkg-dir').sync;
 const path = require('path');
 const formatPath = require('@hxl-cli/format-path');
+const npminstall = require('npminstall');
+const { getDefaultRegistry } = require('@hxl-cli/get-npm-info');
 
 class Package {
   constructor(options) {
@@ -15,6 +17,8 @@ class Package {
     }
     // package的路径
     this.targetPath = options.targetPath;
+    // 缓存package的路径
+    this.storeDir = options.storeDir;
     // package的名称
     this.packageName = options.packageName;
     // package的版本
@@ -34,6 +38,17 @@ class Package {
       }
     }
     return null;
+  }
+  // 安装package
+  install() {
+    npminstall({
+      root: this.targetPath,
+      storeDir: this.storeDir,
+      registry: getDefaultRegistry(),
+      pkgs: [
+        {name: this.packageName, version: this.packageVersion}
+      ]
+    })
   }
 }
 
