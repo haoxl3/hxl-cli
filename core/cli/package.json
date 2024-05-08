@@ -24,7 +24,7 @@
     "test": "node ./__tests__/core.test.js"
   },
   "dependencies": {
-    "@hxl-cli/exce": "file:../exec",
+    "@hxl-cli/exec": "file:../exec",
     "@hxl-cli/get-npm-info": "file:../../utils/get-npm-info",
     "@hxl-cli/init": "file:../../commands/init",
     "@hxl-cli/log": "file:../../utils/log",
