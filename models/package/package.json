@@ -1,6 +1,6 @@
 {
   "name": "@hxl-cli/package",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "> TODO: description",
   "author": "haoxl <1098262516@qq.com>",
   "homepage": "https://github.com/haoxl3/hxl-cli#readme",
@@ -27,8 +27,8 @@
     "url": "https://github.com/haoxl3/hxl-cli/issues"
   },
   "dependencies": {
-    "@hxl-cli/utils": "file:../../utils/utils",
     "@hxl-cli/format-path": "file:../../utils/format-path",
+    "@hxl-cli/utils": "file:../../utils/utils",
     "pkg-dir": "^8.0.0"
   }
 }
