@@ -55,7 +55,7 @@ function checkRoot() {
   const rootCheck = require('root-check');
   rootCheck();
   // 当输出0代表是root用户，否则不是
-  console.log(process.geteuid());
+  console.log('rootCheck', process.geteuid());
 }
 
 function checkUserHome() {
@@ -81,8 +81,8 @@ function checkInputArgs() {
 function checkEnv() {
   const dotenv = require('dotenv');
   const dotenvPath = path.resolve(userHome, '.env');
-  let config;
   // 如果存在.env文件则打印，否则创建一个.env文件
+  console.log('*********checkEnv*********', pathExists(dotenvPath))
   if (pathExists(dotenvPath)) {
     dotenv.config({
       path: dotenvPath
@@ -96,11 +96,9 @@ function checkEnv() {
     } else {
       cliConfig['cliHome'] = path.join(userHome, constant.DEFAULT_CLI_HOME);
     }
-    // config = cliConfig;
     process.env.CLI_HOME_PATH = cliConfig['cliHome'];
   }
-  
-  log.verbose('env', config);
+  console.log('**CLI_HOME_PATH****', process.env.CLI_HOME_PATH);
 }
 
 async function checkGlobalUpdate() {
@@ -112,18 +110,20 @@ async function checkGlobalUpdate() {
   // 3. 提取所有版本号，比对哪些版本号是大于当前版本号
   const lastVersion = await getNpmSemverVersion(currentVersion, npmName);
   // 4. 获取最新的版本号，提示用户更新到该版本
+  console.log('***checkGlobalUpdate***', lastVersion && semver.gt(lastVersion, currentVersion));
   if (lastVersion && semver.gt(lastVersion, currentVersion)) {
     log.warn(colors.yellow(`请手动更新${npmName},当前版本为${currentVersion},最新版本为${lastVersion}`))
   }
 }
 
 function registerCommand() {
+  console.log('*******registerCommand******');
   // 注册命令
   program
     .name(Object.keys(pkg.bin)[0])
     .usage('<command> [options]')
     .version(pkg.version)
-    .option('-d', '--debug', '是否开启调试模式', false)
+    .option('-d, --debug', '是否开启调试模式', false)
     .option('-tp, --targetPath <targetPath>', '是否指定本地调试文件路径', '');
   program
     .command('init [projectName]')
@@ -138,7 +138,7 @@ function registerCommand() {
     }
     log.level = process.env.LOG_LEVEL;
   });
-  // 监听全局变量
+  // 监听全局变量targetPath
   program.on('option:targetPath', function() {
     // 传给环境变量
     program.env.CLI_TARGET_PATH = program.targetPath;
@@ -151,10 +151,10 @@ function registerCommand() {
       console.log(colors.red('可用命令：' + availableCommands.join(', ')));
     }
   });
+  // console.log('program', program);
+  program.parse(process.argv);
   // 未输入命令时打印出帮忙文档
-  if (program.args && program.argv.length < 3) {
+  if (program.args && program.args.length < 1) {
     program.outputHelp();
-  } else {
-    program.parse(process.argv);
   }
 }
