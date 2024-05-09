@@ -39,6 +39,14 @@ class Package {
     }
     return null;
   }
+  // 判断当前package是否存在
+  exists() {
+    return false;
+  }
+  // 更新package
+ update() {
+
+  }
   // 安装package
   install() {
     npminstall({
