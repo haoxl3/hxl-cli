@@ -5,7 +5,8 @@ const pkgDir = require('pkg-dir').sync;
 const path = require('path');
 const formatPath = require('@hxl-cli/format-path');
 const npminstall = require('npminstall');
-const { getDefaultRegistry } = require('@hxl-cli/get-npm-info');
+const { getDefaultRegistry, getNpmLatestVersion } = require('@hxl-cli/get-npm-info');
+const pathExists = require('path-exists').sync;
 
 class Package {
   constructor(options) {
@@ -23,6 +24,8 @@ class Package {
     this.packageName = options.packageName;
     // package的版本
     this.packageVersion = options.packageVersion;
+    // package的缓存目录前缀
+    this.cacheFilePathPrefix = this.packageName.replace('/', '_');
   }
   // 获取入口文件的路径
   getRootFilePath() {
@@ -39,17 +42,33 @@ class Package {
     }
     return null;
   }
+  get cacheFilePath() {
+    // 缓存目录下的包名为_@hxl-cli_init@1.0.0@@hxl-cli/
+    // 实际获取包名为@hxl-cli/init ，版本1.0.0
+    return path.resolve(this.storeDir, `_${this.cacheFilePathPrefix}@${this.packageVersion}@${this.packageName}`);
+  }
+  async prepare() {
+    if (this.packageVersion === 'latest') {
+      this.packageVersion = await getNpmLatestVersion(this.packageName);
+    }
+  }
   // 判断当前package是否存在
-  exists() {
-    return false;
+  async exists() {
+    if (this.storeDir) {
+      await this.prepare();
+      return pathExists(this.cacheFilePath);
+    } else {
+      return pathExists(this.targetPath);
+    }
   }
   // 更新package
  update() {
 
   }
   // 安装package
-  install() {
-    npminstall({
+  async install() {
+    await this.prepare();
+    return npminstall({
       root: this.targetPath,
       storeDir: this.storeDir,
       registry: getDefaultRegistry(),

@@ -38,6 +38,14 @@ function getSemverVersions(baseVersion, versions) {
     .sort((a, b) => semver.gt(b, a));
 }
 
+async function getNpmLatestVersion(npmName, registry) {
+  let versions = await getNpmVersions(npmName, registry);
+  if (versions && versions.length > 0) {
+    return versions.sort((a, b) => semver.gt(b, a))[0];
+  }
+  return null;
+}
+
 async function getNpmSemverVersion(baseVersion, npmName, registry) {
   const versions = await getNpmVersions(npmName, registry);
   const newVersions = getSemverVersions(baseVersion, versions);
@@ -51,5 +59,6 @@ module.exports = {
   getNpmInfo,
   getNpmVersions,
   getNpmSemverVersion,
-  getDefaultRegistry
+  getDefaultRegistry,
+  getNpmLatestVersion
 };

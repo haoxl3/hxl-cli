@@ -8,7 +8,7 @@ const SETTINGS = {
 }
 const CACHE_DIR = 'dependencies/';
 
-function exec() {
+async function exec() {
   console.log('******exec*****')
   let targetPath = process.env.CLI_TARGET_PATH;
   const homePath = process.env.CLI_HOME_PATH;
@@ -38,12 +38,12 @@ function exec() {
       packageName,
       packageVersion
     });
-    if (pkg.exists()) {
+    if (await pkg.exists()) {
       // 更新package
       pkg.update();
     } else {
       // 安装package
-      pkg.install();
+      await pkg.install();
     }
   } else {
     pkg = new Package({
