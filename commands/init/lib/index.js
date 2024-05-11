@@ -7,6 +7,9 @@ class InitCommand extends Command {
     this.projectName = this._argv[0] || '';
     this.force = !!this._cmd.force;
   }
+  exec() {
+    
+  }
 }
 function init(argv) {
   // console.log('***init***', argv);
