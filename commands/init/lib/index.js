@@ -1,7 +1,12 @@
 'use strict';
 
-module.exports = init;
+const Command = require('@hxl-cli/command');
 
-function init() {
-  return 'Hello from init';
+class InitCommand extends Command {
+
 }
+function init() {
+  return new InitCommand();
+}
+module.exports.InitCommand = InitCommand;
+module.exports = init;

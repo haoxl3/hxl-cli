@@ -30,18 +30,30 @@ class Package {
   }
   // 获取入口文件的路径
   getRootFilePath() {
-    // 1. 获取package.json所在目录
-    const dir = pkgDir(this.targetPath);
-    if (dir) {
-      // 2. 读取package.json
-      const pkgFile = require(path.resolve(dir, 'package.json'));
-      // 3. 寻找main/lib获取入口文件路径
-      if (pkgFile && pkgFile.main) {
-        // 4. 路径的兼容(macOS/windows)
-        return formatPath(path.resolve(dir, pkgFile.main));
+    function _getRootFilePath(targetPath) {
+      console.log('***_getRootFilePath****', targetPath);
+      // 1. 获取package.json所在目录
+      const dir = pkgDir(targetPath);
+      if (dir) {
+        // 2. 读取package.json
+        const pkgFile = require(path.resolve(dir, 'package.json'));
+        // 3. 寻找main/lib获取入口文件路径
+        if (pkgFile && pkgFile.main) {
+          // 4. 路径的兼容(macOS/windows)
+          return formatPath(path.resolve(dir, pkgFile.main));
+        }
       }
+      return null;
     }
-    return null;
+    if (this.storeDir) {
+      // this.cacheFilePath即为class中的get cacheFilePath()方法
+      console.log('***cacheFilePath***', this.cacheFilePath);
+      return _getRootFilePath(this.cacheFilePath);
+    } else {
+      // 没有缓存路径时
+      console.log('***getRootFilePath targetPath***', this.targetPath);
+      return _getRootFilePath(this.targetPath);
+    }
   }
   get cacheFilePath() {
     // 缓存目录下的包名为_@hxl-cli_init@1.0.0@@hxl-cli/

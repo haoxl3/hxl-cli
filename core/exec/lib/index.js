@@ -16,7 +16,7 @@ async function exec() {
   log.verbose('homePath', homePath);
   let storeDir = '';
   // console.log('****process****', process.env);
-  console.log('targetPath=', targetPath);
+  console.log('*****19 targetPath=', targetPath);
   // 获取参数，因为不知道具体参数个数，所以使用 arguments
   const cmdObj = arguments[arguments.length - 1];
   // 获取传的参数名称
@@ -53,9 +53,12 @@ async function exec() {
     });
   }
   const rootFile = pkg.getRootFilePath();
+  // 获取入口文件并调用
+  console.log('****rootFile******', rootFile);
   if (rootFile) {
     // apply使用将参数arguments由数组转为init命令需要的参数形式
-    require(rootFile).apply(null, arguments);
+    // require(rootFile).apply(null, arguments);
+    require(rootFile).call(null, Array.from(arguments));
   }
   
 }

@@ -41,16 +41,6 @@ function checkPkgVersion() {
   log.info('cli', pkg.version);
 }
 
-function checkNodeVersion() {
-  // const currentVersion = process.version;
-  // const lowestVersion = constant.LOWEST_NODE_VERSION;
-  // if (!semver.gte(currentVersion, lowestVersion)) {
-  //   throw new Error(colors.red(`hxl-cli 需要安装v${lowestVersion}以上的node版本，请升级node版本`));
-  // } else {
-  //   log.info('node', currentVersion);
-  // }
-}
-
 function checkRoot() {
   const rootCheck = require('root-check');
   rootCheck();
@@ -141,7 +131,7 @@ function registerCommand() {
   // 监听全局变量targetPath
   program.on('option:targetPath', function() {
     // 传给环境变量
-    program.env.CLI_TARGET_PATH = program.targetPath;
+    process.env.CLI_TARGET_PATH = program.targetPath;
   });
   // 监听未知命令
   program.on('command:*', function(obj) {
