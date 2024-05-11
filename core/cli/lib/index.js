@@ -131,7 +131,7 @@ function registerCommand() {
   // 监听全局变量targetPath
   program.on('option:targetPath', function() {
     // 传给环境变量
-    process.env.CLI_TARGET_PATH = program.targetPath;
+    process.env.CLI_TARGET_PATH = program.targetPath || this.opts().targetPath;
   });
   // 监听未知命令
   program.on('command:*', function(obj) {
