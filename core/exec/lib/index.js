@@ -3,6 +3,8 @@
 const Package = require('@hxl-cli/package');
 const log = require('@hxl-cli/log');
 const path = require('path');
+const cp = require('child_process');
+
 const SETTINGS = {
   init: '@hxl-cli/init'
 }
@@ -56,9 +58,37 @@ async function exec() {
   // 获取入口文件并调用
   console.log('****rootFile******', rootFile);
   if (rootFile) {
-    // apply使用将参数arguments由数组转为init命令需要的参数形式
-    // require(rootFile).apply(null, arguments);
-    require(rootFile).call(null, Array.from(arguments));
+    try {
+      // apply使用将参数arguments由数组转为init命令需要的参数形式
+      // require(rootFile).apply(null, arguments);
+      // require(rootFile).call(null, Array.from(arguments));
+      // 将上面的代码换成node多进程方式,rootFile将调用commands/init/lib/index.js
+      // const code = 'console.log(1)';
+      const args = Array.from(arguments);
+      const cmd = args[args.length - 1];
+      const o = Object.create(null);
+      // 将参数瘦身，去掉_和parent、对象自己的属性
+      Object.keys(cmd).forEach(key => {
+        if (cmd.hasOwnProperty(key) && !key.startsWith('_') && key !== 'parent') {
+          o[key] = cmd[key];
+        }
+      });
+      args[args.length - 1] = o;
+      const code = `require('${rootFile}').call(null, ${JSON.stringify(args)})`;
+      const child = cp.spawn('node', ['-e', code], {
+        cwd: process.cwd(),
+        stdio: 'inherit'
+      });
+      child.on('error', e => {
+        console.log('*****error*****', e);
+      });
+      child.on('exit', e => {
+        console.log('******exit 命令执行成功*****');
+        process.exit(e);
+      });
+    } catch (e) {
+      console.log(e.message);
+    }
   }
   
 }

@@ -47,11 +47,9 @@ class Package {
     }
     if (this.storeDir) {
       // this.cacheFilePath即为class中的get cacheFilePath()方法
-      console.log('***cacheFilePath***', this.cacheFilePath);
       return _getRootFilePath(this.cacheFilePath);
     } else {
       // 没有缓存路径时
-      console.log('***getRootFilePath targetPath***', this.targetPath);
       return _getRootFilePath(this.targetPath);
     }
   }
