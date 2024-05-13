@@ -81,7 +81,7 @@ class InitCommand extends Command {
         name: 'projectName',
         message: '请输入项目名称',
         default: '',
-        validate: (v) => {
+        validate: function(v) {
           const done = this.async();
           setTimeout(function() {
             // 1.首字符必须为英文字符
@@ -102,7 +102,7 @@ class InitCommand extends Command {
         name: 'projectVersion',
         message: '请输入项目版本',
         default: '',
-        validate: (v) => {
+        validate: function(v) {
           const done = this.async();
           setTimeout(function() {
             if (!(!!semver.valid(v))) {
