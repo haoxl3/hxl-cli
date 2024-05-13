@@ -30,6 +30,7 @@
   "dependencies": {
     "@hxl-cli/command": "file:../../models/command",
     "fs-extra": "^9.0.1",
-    "inquirer": "^7.3.3"
+    "inquirer": "^7.3.3",
+    "semver": "^7.6.2"
   }
 }

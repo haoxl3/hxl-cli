@@ -3,6 +3,7 @@
 const fs = require('fs');
 const inquirer = require('inquirer');
 const fse = require('fs-extra');
+const semver = require('semver');
 const Command = require('@hxl-cli/command');
 
 const TYPE_PROJECT = 'project';
@@ -56,6 +57,9 @@ class InitCommand extends Command {
     
   }
   async getProjectInfo() {
+    function isValidName(v) {
+      return /^(@[a-zA-Z0-9-_]+\/)?[a-zA-Z]+([-][a-zA-Z][a-zA-Z0-9]*|[_][a-zA-Z][a-zA-Z0-9]*|[a-zA-Z0-9])*$/.test(v);
+    }
     const projectInfo = {};
     // 3. 选择创建项目或组件
     const {type} = await inquirer.prompt({
@@ -78,7 +82,17 @@ class InitCommand extends Command {
         message: '请输入项目名称',
         default: '',
         validate: (v) => {
-          return v;
+          const done = this.async();
+          setTimeout(function() {
+            // 1.首字符必须为英文字符
+            // 2.尾字符必须为英文或数字，不能为字符
+            // 3.字符仅允许"-_"
+            if (!isValidName(v)) {
+              done(`请输入合法的名称`);
+              return;
+            }
+            done(null, true);
+          }, 0);
         },
         filter: (v) => {
           return v;
@@ -89,7 +103,14 @@ class InitCommand extends Command {
         message: '请输入项目版本',
         default: '',
         validate: (v) => {
-          return v;
+          const done = this.async();
+          setTimeout(function() {
+            if (!(!!semver.valid(v))) {
+              done('请输入合法的版本号');
+              return;
+            }
+            done(null, true);
+          }, 0);
         },
         filter: (v) => {
           return v;
