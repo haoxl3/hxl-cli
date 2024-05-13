@@ -1,14 +1,110 @@
 'use strict';
 
+const fs = require('fs');
+const inquirer = require('inquirer');
+const fse = require('fs-extra');
 const Command = require('@hxl-cli/command');
+
+const TYPE_PROJECT = 'project';
+const TYPE_COMPONENT = 'component';
 
 class InitCommand extends Command {
   init() {
     this.projectName = this._argv[0] || '';
     this.force = !!this._cmd.force;
   }
-  exec() {
+  async exec() {
+    // 1. 准备
+    const ret = await this.prepare();
+    // 2. 下载模板
+    // 3. 安装模板
+  }
+  async prepare() {
+    const localPath = process.cwd();
+    // 1. 判断当前目录是否为空
+    if (!this.isDirEmpty(localPath)) {
+      let ifContinue = false;
+      // 询问是否继续创建项目
+      if (!this.force) {
+        ifContinue = (await inquirer.prompt([{
+          type: 'confirm',
+          name: 'ifContinue',
+          default: false,
+          message: `当前目录不为空，是否继续创建项目？`,
+        }])).ifContinue;
+        console.log(ifContinue);
+        if (!ifContinue) {
+          return;
+        }
+      }
+      // 2. 是否启动强制更新
+      if (ifContinue || this.force) {
+        // 给用户做二次确认
+        const { confirmDelete } = await inquirer.prompt([{
+          type: 'confirm',
+          name: 'confirmDelete',
+          default: false,
+          message: `是否确认清空当前目录下的文件？`,
+        }]);
+        if (confirmDelete) {
+          // 清空当前目录
+          fse.emptyDirSync(localPath);
+        }
+      }
+    }
+    return this.getProjectInfo();
     
+  }
+  async getProjectInfo() {
+    const projectInfo = {};
+    // 3. 选择创建项目或组件
+    const {type} = await inquirer.prompt({
+      type: 'list',
+      name: 'type',
+      message: '请选择初始化类型',
+      default: TYPE_PROJECT,
+      choices: [{
+        name: '项目',
+        value: TYPE_PROJECT,
+      }, {
+        name: '组件',
+        value: TYPE_COMPONENT,
+      }]
+    });
+    if (type === TYPE_PROJECT) {
+      const o = await inquirer.prompt([{
+        type: 'input',
+        name: 'projectName',
+        message: '请输入项目名称',
+        default: '',
+        validate: (v) => {
+          return v;
+        },
+        filter: (v) => {
+          return v;
+        }
+      }, {
+        type: 'input',
+        name: 'projectVersion',
+        message: '请输入项目版本',
+        default: '',
+        validate: (v) => {
+          return v;
+        },
+        filter: (v) => {
+          return v;
+        }
+      }]);
+    } else if (type === TYPE_COMPONENT) {
+    }
+    // 4. 获取项目的基本信息
+    return projectInfo;
+  }
+  isDirEmpty(localPath) {
+    // 获取当前目录下的文件列表
+    let fileList = fs.readdirSync(localPath);
+    fileList = fileList.filter(file => !file.startsWith('.') && ['node_modules', 'dist'].indexOf(file) < 0);
+    return !fileList || fileList.length <= 0;
   }
 }
 function init(argv) {

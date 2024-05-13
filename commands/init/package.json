@@ -28,6 +28,8 @@
     "url": "https://github.com/haoxl3/hxl-cli/issues"
   },
   "dependencies": {
-    "@hxl-cli/command": "file:../../models/command"
+    "@hxl-cli/command": "file:../../models/command",
+    "fs-extra": "^9.0.1",
+    "inquirer": "^7.3.3"
   }
 }
