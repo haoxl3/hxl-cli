@@ -1,5 +1,5 @@
 {
-  "name": "@hxl-cli/init",
+  "name": "@hxl-cli/request",
   "version": "0.0.6",
   "description": "> TODO: description",
   "author": "haoxl <1098262516@qq.com>",
@@ -14,24 +14,19 @@
     "lib"
   ],
   "publishConfig": {
-    "registry": "https://registry.npmjs.org",
-    "access": "public"
+    "registry": "http://registry.npm.baidu-int.com"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/haoxl3/hxl-cli.git"
   },
   "scripts": {
-    "test": "node ./__tests__/init.test.js"
+    "test": "node ./__tests__/@hxl-cli/request.test.js"
   },
   "bugs": {
     "url": "https://github.com/haoxl3/hxl-cli/issues"
   },
   "dependencies": {
-    "@hxl-cli/command": "file:../../models/command",
-    "@hxl-cli/request": "file:../../utils/request",
-    "fs-extra": "^9.0.1",
-    "inquirer": "^7.3.3",
-    "semver": "^7.3.4"
+    "axios": "^1.6.8"
   }
 }
