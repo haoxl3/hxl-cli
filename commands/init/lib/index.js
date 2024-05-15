@@ -5,6 +5,8 @@ const inquirer = require('inquirer');
 const fse = require('fs-extra');
 const semver = require('semver');
 const Command = require('@hxl-cli/command');
+const Package = require('@hxl-cli/package');
+const userHome = require('user-home');
 const getProjectTemplate = require('./getProjectTemplate');
 
 const TYPE_PROJECT = 'project';
@@ -21,7 +23,7 @@ class InitCommand extends Command {
     if (projectInfo) {
       // 2. 下载模板
       this.projectInfo = projectInfo;
-      this.downloadTemplate();
+      await this.downloadTemplate();
       // 3. 安装模板
     }
     
@@ -68,9 +70,23 @@ class InitCommand extends Command {
     return this.getProjectInfo();
     
   }
-  downloadTemplate() {
-    console.log(this.projectInfo);
-    console.log(this.template);
+  async downloadTemplate() {
+    const { projectTemplate } = this.projectInfo;
+    const templateInfo = this.template.find(item => item.npmName === projectTemplate);
+    const targetPath = path.resolve(userHome, '.hxl-cli', 'template');
+    const storeDir = path.resolve(userHome, '.hxl-cli', 'template', 'node_modules');
+    const { npmName, version } = templateInfo;
+    const templateNpm = new Package({
+      targetPath,
+      storeDir,
+      packageName: npmName,
+      packageVersion: version,
+    });
+    if (!await templateNpm.exists()) {
+      await templateNpm.install();
+    } else {
+      await templateNpm.update();
+    }
     // 1. 通过项目模板API获取项目模板信息
     // 1.1 通过egg.js搭建一套后端系统
     // 1.2 通过npm存储项目模板
