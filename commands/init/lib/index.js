@@ -136,11 +136,22 @@ class InitCommand extends Command {
         filter: (v) => {
           return v;
         }
+      }, {
+        type: 'list',
+        name: 'projectTemplate',
+        message: '请选择项目模板',
+        choices: this.createTemplateChoice()
       }]);
     } else if (type === TYPE_COMPONENT) {
     }
     // 4. 获取项目的基本信息
     return projectInfo;
+  }
+  createTemplateChoice() {
+    return this.template.map(item => ({
+      value: item.npmName,
+      name: item.name
+    }));
   }
   isDirEmpty(localPath) {
     // 获取当前目录下的文件列表
