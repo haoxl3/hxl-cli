@@ -167,7 +167,7 @@ class InitCommand extends Command {
       }]);
       projectInfo = {
         ...projectInfo,
-        ...0
+        ...o
       };
     } else if (type === TYPE_COMPONENT) {
     }
