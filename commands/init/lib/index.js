@@ -9,6 +9,7 @@ const Package = require('@hxl-cli/package');
 const userHome = require('user-home');
 const getProjectTemplate = require('./getProjectTemplate');
 const { spinnerStart, sleep } = require('@hxl-cli/utils');
+const log = require('@hxl-cli/log');
 
 const TYPE_PROJECT = 'project';
 const TYPE_COMPONENT = 'component';
@@ -21,7 +22,6 @@ class InitCommand extends Command {
   async exec() {
     // 1. 准备
     const projectInfo = await this.prepare();
-    console.log('****exec projectInfo***', projectInfo);
     if (projectInfo) {
       // 2. 下载模板
       this.projectInfo = projectInfo;
@@ -88,11 +88,13 @@ class InitCommand extends Command {
       await sleep();
       await templateNpm.install();
       spinner.stop(true);
+      log.success('下载模板成功');
     } else {
       const spinner = spinnerStart('正在更新模板...');
       await sleep();
       await templateNpm.update();
       spinner.stop(true);
+      log.success('更新模板成功');
     }
     // 1. 通过项目模板API获取项目模板信息
     // 1.1 通过egg.js搭建一套后端系统
