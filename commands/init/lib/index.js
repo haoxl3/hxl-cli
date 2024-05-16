@@ -8,6 +8,7 @@ const Command = require('@hxl-cli/command');
 const Package = require('@hxl-cli/package');
 const userHome = require('user-home');
 const getProjectTemplate = require('./getProjectTemplate');
+const { spinerStart } = require('@hxl-cli/utils');
 
 const TYPE_PROJECT = 'project';
 const TYPE_COMPONENT = 'component';
@@ -83,9 +84,16 @@ class InitCommand extends Command {
       packageVersion: version,
     });
     if (!await templateNpm.exists()) {
+      // 在控制台添加loading效果动画
+      const spinner = spinerStart('正在下载模板...');
+      await sleep();
       await templateNpm.install();
+      spinner.stop(true);
     } else {
+      const spinner = spinerStart('正在更新模板...');
+      await sleep();
       await templateNpm.update();
+      spinner.stop(true);
     }
     // 1. 通过项目模板API获取项目模板信息
     // 1.1 通过egg.js搭建一套后端系统
