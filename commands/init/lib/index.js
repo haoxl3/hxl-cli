@@ -21,6 +21,7 @@ class InitCommand extends Command {
   async exec() {
     // 1. 准备
     const projectInfo = await this.prepare();
+    console.log('****exec projectInfo***', projectInfo);
     if (projectInfo) {
       // 2. 下载模板
       this.projectInfo = projectInfo;
@@ -48,7 +49,6 @@ class InitCommand extends Command {
           default: false,
           message: `当前目录不为空，是否继续创建项目？`,
         }])).ifContinue;
-        console.log(ifContinue);
         if (!ifContinue) {
           return;
         }
@@ -69,7 +69,6 @@ class InitCommand extends Command {
       }
     }
     return this.getProjectInfo();
-    
   }
   async downloadTemplate() {
     const { projectTemplate } = this.projectInfo;
@@ -105,7 +104,7 @@ class InitCommand extends Command {
     function isValidName(v) {
       return /^(@[a-zA-Z0-9-_]+\/)?[a-zA-Z]+([-][a-zA-Z][a-zA-Z0-9]*|[_][a-zA-Z][a-zA-Z0-9]*|[a-zA-Z0-9])*$/.test(v);
     }
-    const projectInfo = {};
+    let projectInfo = {};
     // 3. 选择创建项目或组件
     const {type} = await inquirer.prompt({
       type: 'list',
@@ -166,6 +165,10 @@ class InitCommand extends Command {
         message: '请选择项目模板',
         choices: this.createTemplateChoice()
       }]);
+      projectInfo = {
+        ...projectInfo,
+        ...0
+      };
     } else if (type === TYPE_COMPONENT) {
     }
     // 4. 获取项目的基本信息
