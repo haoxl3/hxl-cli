@@ -8,7 +8,7 @@ const Command = require('@hxl-cli/command');
 const Package = require('@hxl-cli/package');
 const userHome = require('user-home');
 const getProjectTemplate = require('./getProjectTemplate');
-const { spinnerStart } = require('@hxl-cli/utils');
+const { spinnerStart, sleep } = require('@hxl-cli/utils');
 
 const TYPE_PROJECT = 'project';
 const TYPE_COMPONENT = 'component';
