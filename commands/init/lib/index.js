@@ -86,15 +86,25 @@ class InitCommand extends Command {
       // 在控制台添加loading效果动画
       const spinner = spinnerStart('正在下载模板...');
       await sleep();
-      await templateNpm.install();
-      spinner.stop(true);
-      log.success('下载模板成功');
+      try {
+        await templateNpm.install();
+        log.success('下载模板成功');
+      } catch (e) {
+        throw e;
+      } finally {
+        spinner.stop(true);
+      }
     } else {
       const spinner = spinnerStart('正在更新模板...');
       await sleep();
-      await templateNpm.update();
-      spinner.stop(true);
-      log.success('更新模板成功');
+      try {
+        await templateNpm.update();
+        log.success('更新模板成功');
+      } catch (e) {
+        throw e;
+      } finally {
+        spinner.stop(true);
+      }
     }
     // 1. 通过项目模板API获取项目模板信息
     // 1.1 通过egg.js搭建一套后端系统
