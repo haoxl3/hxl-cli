@@ -13,6 +13,8 @@ const log = require('@hxl-cli/log');
 
 const TYPE_PROJECT = 'project';
 const TYPE_COMPONENT = 'component';
+const TEMPLATE_TYPE_NORMAL = 'normal';
+const TEMPLATE_TYPE_CUSTOM = 'custom';
 
 class InitCommand extends Command {
   init() {
@@ -27,6 +29,7 @@ class InitCommand extends Command {
       this.projectInfo = projectInfo;
       await this.downloadTemplate();
       // 3. 安装模板
+      await this.installTemplate();
     }
     
   }
@@ -76,6 +79,8 @@ class InitCommand extends Command {
     const targetPath = path.resolve(userHome, '.hxl-cli', 'template');
     const storeDir = path.resolve(userHome, '.hxl-cli', 'template', 'node_modules');
     const { npmName, version } = templateInfo;
+    // 选择的模板改为全局变量
+    this.templateInfo = templateInfo;
     const templateNpm = new Package({
       targetPath,
       storeDir,
@@ -111,6 +116,23 @@ class InitCommand extends Command {
     // 1.2 通过npm存储项目模板
     // 1.3 将项目模板信息存储到mongodb数据库中
     // 1.4 通过egg.js获取mongodb中的数据并且通过API返回
+  }
+  async installTemplate() {
+    console.log(this.templateInfo);
+    if (this.templateInfo) {
+      if (this.templateInfo.type) {
+        this.templateInfo.type = TEMPLATE_TYPE_NORMAL;
+      }
+      if (this.templateInfo.type === TEMPLATE_TYPE_NORMAL) {
+        // 标准安装
+      } else if (this.templateInfo.type === TEMPLATE_TYPE_CUSTOM) {
+        // 自定义安装
+      } else {
+        throw new Error('无法识别项目模板类型！');
+      }
+    } else {
+      throw new Error('项目模板信息不存在！');
+    }
   }
   async getProjectInfo() {
     function isValidName(v) {
