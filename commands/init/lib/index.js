@@ -8,7 +8,7 @@ const Command = require('@hxl-cli/command');
 const Package = require('@hxl-cli/package');
 const userHome = require('user-home');
 const getProjectTemplate = require('./getProjectTemplate');
-const { spinnerStart, sleep } = require('@hxl-cli/utils');
+const { spinnerStart, sleep, execAsync } = require('@hxl-cli/utils');
 const log = require('@hxl-cli/log');
 
 const TYPE_PROJECT = 'project';
@@ -151,6 +151,7 @@ class InitCommand extends Command {
   async installNormalTemplate() {
     console.log('安装普通模板');
     console.log(this.templateNpm.cacheFilePath);
+    console.log(this.templateNpm);
     // 拷贝模板代码至当前目录
     let spinner = spinnerStart('正在安装模板...');
     try {
@@ -164,6 +165,31 @@ class InitCommand extends Command {
     } finally {
       spinner.stop(true);
       log.success('安装模板成功');
+    }
+    // 依赖安装
+    const {installCommand, startCommand } = this.templateInfo;
+    let installRet;
+    if (installCommand) {
+      const installCmd = installCommand.split(' ');
+      const cmd = installCmd[0];
+      const args = installCmd.slice(1);
+      installRet = await execAsync(cmd, args, {
+        stdio: 'inherit',
+        cwd: process.cwd(),
+      });
+      if (installRet !== 0) {
+        throw new Error('依赖安装失败');
+      }
+    }
+    // 启动命令执行
+    if (startCommand) {
+      const startCmd = startCommand.split(' ');
+      const cmd = startCmd[0];
+      const args = startCmd.slice(1);
+      await execAsync(cmd, args, {
+        stdio: 'inherit',
+        cwd: process.cwd(),
+      });
     }
   }
   async installCustomTemplate() {

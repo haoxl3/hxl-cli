@@ -4,6 +4,7 @@ const Package = require('@hxl-cli/package');
 const log = require('@hxl-cli/log');
 const path = require('path');
 const cp = require('child_process');
+const { exec: spawn } = require('@hxl-cli/utils');
 
 const SETTINGS = {
   init: '@hxl-cli/init'
@@ -89,12 +90,6 @@ async function exec() {
     } catch (e) {
       console.log(e.message);
     }
-  }
-  function spawn(command, args, options) {
-    const win32 = process.platform === 'win32';
-    const cmd = win32 ? 'cmd' : command;
-    const cmdArgs = win32 ? ['/c'].concat(command, args) : args;
-    return cp.spawn(cmd, cmdArgs, options || {});
   }
 }
 module.exports = exec;

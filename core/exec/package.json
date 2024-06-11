@@ -29,6 +29,7 @@
   },
   "dependencies": {
     "@hxl-cli/log": "file:../../utils/log",
-    "@hxl-cli/package": "file:../../models/package"
+    "@hxl-cli/package": "file:../../models/package",
+    "@hxl-cli/utils": "file:../../utils/utils"
   }
 }
