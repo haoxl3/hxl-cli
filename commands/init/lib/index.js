@@ -93,22 +93,34 @@ class InitCommand extends Command {
       await sleep();
       try {
         await templateNpm.install();
-        log.success('下载模板成功');
       } catch (e) {
         throw e;
       } finally {
         spinner.stop(true);
+        // todo：应该等安装成功才赋值
+        this.templateNpm = templateNpm;
+        if (await templateNpm.exists()) {
+          console.log('下载模板成功');
+          this.templateNpm = templateNpm;
+          log.success('下载模板成功');
+        } else {
+          console.log('下载模板失败');
+          console.log(templateNpm);
+        }
       }
     } else {
       const spinner = spinnerStart('正在更新模板...');
       await sleep();
       try {
         await templateNpm.update();
-        log.success('更新模板成功');
       } catch (e) {
         throw e;
       } finally {
         spinner.stop(true);
+        if (await templateNpm.exists()) {
+          this.templateNpm = templateNpm;
+          log.success('更新模板成功');
+        }
       }
     }
     // 1. 通过项目模板API获取项目模板信息
@@ -120,19 +132,42 @@ class InitCommand extends Command {
   async installTemplate() {
     console.log(this.templateInfo);
     if (this.templateInfo) {
-      if (this.templateInfo.type) {
+      if (!this.templateInfo.type) {
         this.templateInfo.type = TEMPLATE_TYPE_NORMAL;
       }
       if (this.templateInfo.type === TEMPLATE_TYPE_NORMAL) {
         // 标准安装
+        await this.installNormalTemplate();
       } else if (this.templateInfo.type === TEMPLATE_TYPE_CUSTOM) {
         // 自定义安装
+        await this.installCustomTemplate();
       } else {
         throw new Error('无法识别项目模板类型！');
       }
     } else {
       throw new Error('项目模板信息不存在！');
     }
+  }
+  async installNormalTemplate() {
+    console.log('安装普通模板');
+    console.log(this.templateNpm.cacheFilePath);
+    // 拷贝模板代码至当前目录
+    let spinner = spinnerStart('正在安装模板...');
+    try {
+      const templatePath = path.resolve(this.templateNpm.cacheFilePath, 'template');
+      const targetPath = process.cwd();
+      fse.ensureDirSync(templatePath);
+      fse.ensureDirSync(targetPath);
+      fse.copySync(templatePath, targetPath)
+    } catch (e) {
+      throw e;
+    } finally {
+      spinner.stop(true);
+      log.success('安装模板成功');
+    }
+  }
+  async installCustomTemplate() {
+    
   }
   async getProjectInfo() {
     function isValidName(v) {
