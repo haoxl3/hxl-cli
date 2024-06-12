@@ -286,11 +286,11 @@ class InitCommand extends Command {
         return v;
       }
     }
-    const prjectPrompt = [];
+    const projectPrompt = [];
     if (!isProjectNameValid) {
-      prjectPrompt.push(projectNamePrompt);
+      projectPrompt.push(projectNamePrompt);
     }
-    prjectPrompt.push({
+    projectPrompt.push({
       type: 'input',
       name: 'projectVersion',
       message: `请输入${title}版本`,
@@ -317,7 +317,7 @@ class InitCommand extends Command {
     // 3. 选择创建项目或组件
     if (type === TYPE_PROJECT) {
       // 2. 获取项目基本信息
-      const project = await inquirer.prompt(prjectPrompt);
+      const project = await inquirer.prompt(projectPrompt);
       projectInfo = {
         ...projectInfo,
         type,
