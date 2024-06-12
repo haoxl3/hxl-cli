@@ -11,6 +11,7 @@ const getProjectTemplate = require('./getProjectTemplate');
 const { spinnerStart, sleep, execAsync } = require('@hxl-cli/utils');
 const log = require('@hxl-cli/log');
 const glob = require('glob');
+const ejs = require('ejs');
 
 const TYPE_PROJECT = 'project';
 const TYPE_COMPONENT = 'component';

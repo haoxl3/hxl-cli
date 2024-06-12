@@ -33,6 +33,7 @@
     "@hxl-cli/package": "file:../../models/package",
     "@hxl-cli/request": "file:../../utils/request",
     "@hxl-cli/utils": "file:../../utils/utils",
+    "ejs": "^3.1.5",
     "fs-extra": "^9.0.1",
     "glob": "^7.1.6",
     "inquirer": "^7.3.3",
