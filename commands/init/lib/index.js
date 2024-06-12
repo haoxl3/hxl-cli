@@ -247,6 +247,20 @@ class InitCommand extends Command {
       isProjectNameValid = true;
       projectInfo.projectName = this.projectName;
     }
+    // 1. 选择创建项目或组件
+    const { type } = await inquirer.prompt({
+      type: 'list',
+      name: 'type',
+      message: '请选择初始化类型',
+      default: TYPE_PROJECT,
+      choices: [{
+        name: '项目',
+        value: TYPE_PROJECT,
+      }, {
+        name: '组件',
+        value: TYPE_COMPONENT,
+      }],
+    });
     // 筛选出项目或组件模板
     this.template = this.template.filter(template => template.tag.includes(type));
     const title = type === TYPE_PROJECT ? '项目' : '组件';
@@ -301,19 +315,6 @@ class InitCommand extends Command {
       choices: this.createTemplateChoice()
     });
     // 3. 选择创建项目或组件
-    const {type} = await inquirer.prompt({
-      type: 'list',
-      name: 'type',
-      message: '请选择初始化类型',
-      default: TYPE_PROJECT,
-      choices: [{
-        name: '项目',
-        value: TYPE_PROJECT,
-      }, {
-        name: '组件',
-        value: TYPE_COMPONENT,
-      }]
-    });
     if (type === TYPE_PROJECT) {
       // 2. 获取项目基本信息
       const project = await inquirer.prompt(prjectPrompt);
