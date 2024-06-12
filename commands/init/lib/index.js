@@ -10,6 +10,7 @@ const userHome = require('user-home');
 const getProjectTemplate = require('./getProjectTemplate');
 const { spinnerStart, sleep, execAsync } = require('@hxl-cli/utils');
 const log = require('@hxl-cli/log');
+const glob = require('glob');
 
 const TYPE_PROJECT = 'project';
 const TYPE_COMPONENT = 'component';
@@ -174,6 +175,38 @@ class InitCommand extends Command {
     }
     return ret;
   }
+  async ejsRender(options) {
+    const dir = process.cwd();
+    const projectInfo = this.projectInfo;
+    return new Promise((resolve, reject) => {
+      glob('**', {
+        cwd: dir,
+        ignore: options.ignore || '',
+        nodir: true,
+      }, function(err, files) {
+        if (err) {
+          reject(err);
+        }
+        Promise.all(files.map(file => {
+          const filePath = path.join(dir, file);
+          return new Promise((resolve1, reject1) => {
+            ejs.renderFile(filePath, projectInfo, {}, (err, result) => {
+              if (err) {
+                reject1(err);
+              } else {
+                fse.writeFileSync(filePath, result);
+                resolve1(result);
+              }
+            });
+          });
+        })).then(() => {
+          resolve();
+        }).catch(err => {
+          reject(err);
+        });
+      });
+    });
+  }
   async installNormalTemplate() {
     console.log('安装普通模板');
     console.log(this.templateNpm.cacheFilePath);
@@ -192,6 +225,9 @@ class InitCommand extends Command {
       spinner.stop(true);
       log.success('安装模板成功');
     }
+    const templateIgnore = this.templateInfo.ignore || [];
+    const ignore = ['**/node_modules/**', ...templateIgnore];
+    await this.ejsRender({ignore});
     // 依赖安装
     const {installCommand, startCommand } = this.templateInfo;
     await this.execCommand(installCommand, '依赖安装失败');
@@ -225,6 +261,8 @@ class InitCommand extends Command {
         value: TYPE_COMPONENT,
       }]
     });
+    // 筛选出项目或组件模板
+    this.template = this.template.filter(template => template.tag.includes(type));
     if (type === TYPE_PROJECT) {
       // 2. 获取项目基本信息
       const projectNamePrompt = {
