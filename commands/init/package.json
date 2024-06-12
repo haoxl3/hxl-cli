@@ -29,12 +29,13 @@
   },
   "dependencies": {
     "@hxl-cli/command": "file:../../models/command",
+    "@hxl-cli/log": "file:../../utils/log",
     "@hxl-cli/package": "file:../../models/package",
     "@hxl-cli/request": "file:../../utils/request",
     "@hxl-cli/utils": "file:../../utils/utils",
-    "@hxl-cli/log": "file:../../utils/log",
     "fs-extra": "^9.0.1",
     "inquirer": "^7.3.3",
+    "kebab-case": "^1.0.2",
     "semver": "^7.3.4",
     "user-home": "^3.0.0"
   }

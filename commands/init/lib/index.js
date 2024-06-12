@@ -15,6 +15,7 @@ const TYPE_PROJECT = 'project';
 const TYPE_COMPONENT = 'component';
 const TEMPLATE_TYPE_NORMAL = 'normal';
 const TEMPLATE_TYPE_CUSTOM = 'custom';
+const WHITE_COMMAND = ['npm', 'cnpm'];
 
 class InitCommand extends Command {
   init() {
@@ -148,6 +149,31 @@ class InitCommand extends Command {
       throw new Error('项目模板信息不存在！');
     }
   }
+  checkCommand(cmd) {
+    if (WHITE_COMMAND.includes(cmd)) {
+      return cmd;
+    }
+    return null;
+  }
+  async execCommand(command, errMsg) {
+    let ret;
+    if (command) {
+      const cmdArray = command.split(' ');
+      const cmd = this.checkCommand(cmdArray[0]);
+      const args = cmdArray.slice(1);
+      if (!cmd) {
+        throw new Error('命令不存在!命令：' + command);
+      }
+      await execAsync(cmd, args, {
+        stdio: 'inherit',
+        cwd: process.cwd(),
+      });
+    }
+    if (ret !== 0) {
+      throw new Error(errMsg);
+    }
+    return ret;
+  }
   async installNormalTemplate() {
     console.log('安装普通模板');
     console.log(this.templateNpm.cacheFilePath);
@@ -168,29 +194,9 @@ class InitCommand extends Command {
     }
     // 依赖安装
     const {installCommand, startCommand } = this.templateInfo;
-    let installRet;
-    if (installCommand) {
-      const installCmd = installCommand.split(' ');
-      const cmd = installCmd[0];
-      const args = installCmd.slice(1);
-      installRet = await execAsync(cmd, args, {
-        stdio: 'inherit',
-        cwd: process.cwd(),
-      });
-      if (installRet !== 0) {
-        throw new Error('依赖安装失败');
-      }
-    }
+    await this.execCommand(installCommand, '依赖安装失败');
     // 启动命令执行
-    if (startCommand) {
-      const startCmd = startCommand.split(' ');
-      const cmd = startCmd[0];
-      const args = startCmd.slice(1);
-      await execAsync(cmd, args, {
-        stdio: 'inherit',
-        cwd: process.cwd(),
-      });
-    }
+    await this.execCommand(startCommand, '启动命令执行失败');
   }
   async installCustomTemplate() {
     
@@ -200,6 +206,11 @@ class InitCommand extends Command {
       return /^(@[a-zA-Z0-9-_]+\/)?[a-zA-Z]+([-][a-zA-Z][a-zA-Z0-9]*|[_][a-zA-Z][a-zA-Z0-9]*|[a-zA-Z0-9])*$/.test(v);
     }
     let projectInfo = {};
+    let isProjectNameValid = false;
+    if (isValidName(this.projectName)) {
+      isProjectNameValid = true;
+      projectInfo.projectName = this.projectName;
+    }
     // 3. 选择创建项目或组件
     const {type} = await inquirer.prompt({
       type: 'list',
@@ -215,7 +226,8 @@ class InitCommand extends Command {
       }]
     });
     if (type === TYPE_PROJECT) {
-      const o = await inquirer.prompt([{
+      // 2. 获取项目基本信息
+      const projectNamePrompt = {
         type: 'input',
         name: 'projectName',
         message: '请输入项目名称',
@@ -236,7 +248,12 @@ class InitCommand extends Command {
         filter: (v) => {
           return v;
         }
-      }, {
+      }
+      const prjectPrompt = [];
+      if (!isProjectNameValid) {
+        prjectPrompt.push(projectNamePrompt);
+      }
+      prjectPrompt.push({
         type: 'input',
         name: 'projectVersion',
         message: '请输入项目版本',
@@ -259,12 +276,18 @@ class InitCommand extends Command {
         name: 'projectTemplate',
         message: '请选择项目模板',
         choices: this.createTemplateChoice()
-      }]);
+      });
+      const project = await inquirer.prompt(prjectPrompt);
       projectInfo = {
         ...projectInfo,
-        ...o
+        type,
+        ...project
       };
     } else if (type === TYPE_COMPONENT) {
+    }
+    // 生成classname（将驼峰转为-连接）
+    if (projectInfo.projectName) {
+      projectInfo.className = require('kebab-case')(projectInfo.projectName).replace(/^-/, '');
     }
     // 4. 获取项目的基本信息
     return projectInfo;
