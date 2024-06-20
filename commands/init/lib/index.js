@@ -236,7 +236,26 @@ class InitCommand extends Command {
     await this.execCommand(startCommand, '启动命令执行失败');
   }
   async installCustomTemplate() {
-    
+      console.log('安装自定义模板');
+      // 查询自定义模板的入口文件
+      if (await this.templateNpm.exists()) {
+        const rootFile = this.templateNpm.getRootFilePath();
+        if (fs.existsSync(rootFile)) {
+          console.log('开始执行自定义模板');
+          const options = {
+            ...this.templateInfo,
+            cwd: process.cwd()
+          };
+          const code = `require('${rootFile}')(${JSON.stringify(options)})`;
+          await execAsync('node', ['-e', code], {stdio: 'inherit', cwd: process.cwd()});
+          console.log('自定义模板安装成功');
+
+        } else {
+          throw new Error('自定义模板入口文件不存在');
+        }
+      } else {
+        console.log('templateNpm不存在', this.templateNpm);
+      }
   }
   async getProjectInfo() {
     function isValidName(v) {
